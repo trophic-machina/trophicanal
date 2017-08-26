@@ -12,7 +12,7 @@ df_orders['Order Date'] = pd.to_datetime(df_orders['Order Date'])
 # just keep the good stuff
 df_orders = df_orders[['Order Date', 'Customer User Id', 'Order Total Amount']]
 df_orders = df_orders.sort_values('Order Date')
-
+df_orders['Order Date'] = pd.to_datetime(df_orders['Order Date'])
 order_list = df_orders.values
 print(order_list)
 
@@ -26,6 +26,6 @@ print(order_list)
 #print(dict(list(first_order_dates)))
 #print(fod.index[0])
 #df_fod = fod.apply(list)
-
+#df_fod['Order Date'] = df_fod['Order Date']
 #print(df_fod['Order Date'].week)
 #print(df_fod['Order Date'].dt.week.tolist())
