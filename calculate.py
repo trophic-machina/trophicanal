@@ -43,7 +43,7 @@ def build_data_structure(order_list):
     cust_cohort_dict[first_custid] = cohort
     cohort_dict = multi_level_dict()
     cohort_dict[1][ first_custid ] = [ order_week_number, order_cost, delivery_week_number ]
-    
+     
     for o in range(1, len(order_list)):
         current_order_week   = order_list[o][0].isocalendar()[1]
         current_custid       = order_list[o][1]
