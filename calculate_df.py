@@ -7,6 +7,9 @@ pd.set_option("display.width", 0)
 df_orders = pd.read_excel('Fitlife\orders-2017-08-16-07-09-37.xlsx')
 # prints unique order status types
 #print(list(set(df_orders['Order Status'])))
+print(len(list(set(df_orders['Customer User Id']))))
+
+"""
 df_orders['Order Date'] = pd.to_datetime(df_orders['Order Date'])
 
 # just keep the good stuff
@@ -29,3 +32,4 @@ print(order_list)
 #df_fod['Order Date'] = df_fod['Order Date']
 #print(df_fod['Order Date'].week)
 #print(df_fod['Order Date'].dt.week.tolist())
+"""
