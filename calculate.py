@@ -20,7 +20,12 @@ def read_file():
     #print(list(set(df_orders['Order Status'])))
     
     # just keep the good stuff and sort by date, convert to list
-    df_orders = df_orders[ ['Order Date', 'Customer User Id', 'Order Total Amount', 'Del Date'] ]
+    df_orders = df_orders[ ['Order Date', 'Customer User Id', 'Order Total Amount', 'Del Date', 'Subscription Type'] ]
+    #df_orders['Subscription Type'].str.upper()
+    
+    df_orders = df_orders.loc[df_orders['Subscription Type'].str.upper() == 'WEEKLY']
+    print(df_orders)
+
     df_orders = df_orders.sort_values('Del Date')
     
     # df_orders.values: [ [time, custid, cost, deldate], [time, custid, cost, deldate], ... ]
@@ -29,13 +34,13 @@ def read_file():
 def build_data_structure(order_list):
     # initialize counters and trackers
     cohort = 1
-    cohort_start_date   = order_list[0][0]
+    order_date          = order_list[0][0]
     first_custid        = order_list[0][1]
     order_cost          = order_list[0][2]
-    order_delivery_date = order_list[0][3]
+    cohort_start_date   = order_list[0][3]
     
-    order_week_number = cohort_start_date.isocalendar()[1]
-    delivery_week_number = order_delivery_date.isocalendar()[1]
+    order_week_number = order_date.isocalendar()[1]
+    delivery_week_number = cohort_start_date.isocalendar()[1]
     
     # Initialize dict to track cust cohort,
     # and multilevel dict with earliest order placed for main data structure.
@@ -43,26 +48,26 @@ def build_data_structure(order_list):
     cust_cohort_dict[first_custid] = cohort
     cohort_dict = multi_level_dict()
     cohort_dict[1][ first_custid ] = [ order_week_number, order_cost, delivery_week_number ]
-     
+    
     for o in range(1, len(order_list)):
-        current_order_week   = order_list[o][0].isocalendar()[1]
+        order_week_number    = order_list[o][0].isocalendar()[1]
         current_custid       = order_list[o][1]
         current_order_cost   = order_list[o][2]
-        delivery_week_number = order_list[o][3].isocalendar()[1]
+        current_delivery_week = order_list[o][3].isocalendar()[1]
         
         #print("cust id: ", current_custid)
         if current_custid in cust_cohort_dict:  #[1]:
             #print("current_custid, current_order_cost= ", current_custid, current_order_cost)
             cust_cohort = cust_cohort_dict[current_custid]
             #print("cust_cohort= ", cust_cohort)
-            cohort_dict[cust_cohort][current_custid].append([current_order_week, current_order_cost, delivery_week_number ])
+            cohort_dict[cust_cohort][current_custid].append([order_week_number, current_order_cost, current_delivery_week ])
         else:
             # now deal with week to find cohort
-            if current_order_week > order_week_number:
-                order_week_number = current_order_week
+            if current_delivery_week > delivery_week_number:
+                delivery_week_number = current_delivery_week
                 cohort = cohort + 1
             cust_cohort_dict[current_custid] = cohort
-            cohort_dict[cohort][current_custid] = [ [current_order_week, current_order_cost, delivery_week_number] ]
+            cohort_dict[cohort][current_custid] = [ [order_week_number, current_order_cost, current_delivery_week] ]
     return cohort_dict
 
 if __name__ == '__main__':
