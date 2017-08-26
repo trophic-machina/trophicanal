@@ -27,15 +27,18 @@ order_list = df_orders.values
 #print(order_list[1][1])
 #print(order_list)
 
+# initialize multilevel dict with earliest order
 
+# order_list[ [time, custid, cost], [time, custid, cost], ... [time, custid, cost] ]
 cohort_dict[1][order_list[0][1]] = [order_list[0][0], order_list[0][2]]
 cohort = 1
 for o in range(1, len(order_list)):
-    print("cust id: ", order_list[o][1])
-    if order_list[o][1] in cohort_dict[1]:
-        print(order_list[o][1], order_list[o][2])
-        cohort_dict[1][order_list[o][1]].append([order_list[o][0], order_list[o][2]])
+    current_custid = order_list[o][1]
+    print("cust id: ", current_custid)
+    if current_custid in cohort_dict[1]:
+        print(current_custid, order_list[o][2])
+        cohort_dict[cohort][current_custid].append([order_list[o][0], order_list[o][2]])
     else:
-        cohort_dict[1][order_list[o][1]] = [ [order_list[o][0], order_list[o][2]] ]
+        cohort_dict[cohort][current_custid] = [ [order_list[o][0], order_list[o][2]] ]
 
 pprint(cohort_dict)
