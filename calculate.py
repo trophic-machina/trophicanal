@@ -32,10 +32,10 @@ cohort_dict[1][order_list[0][1]] = [order_list[0][0], order_list[0][2]]
 cohort = 1
 for o in range(1, len(order_list)):
     print("cust id: ", order_list[o][1])
-#    if cohort_dict.get[order_list[o][1]] == None:
     if order_list[o][1] in cohort_dict[1]:
         print(order_list[o][1], order_list[o][2])
+        cohort_dict[1][order_list[o][1]].append([order_list[o][0], order_list[o][2]])
     else:
-        cohort_dict[1][order_list[o][1]] = [order_list[o][0], order_list[o][2]]
+        cohort_dict[1][order_list[o][1]] = [ [order_list[o][0], order_list[o][2]] ]
 
 pprint(cohort_dict)
