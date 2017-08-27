@@ -12,23 +12,21 @@ def multi_level_dict():
     return defaultdict(multi_level_dict)
 
 def read_file():
-    # read file using pandas and parse date field
+    # read file using pandas and parse date fields
     df_orders = pd.read_excel('Fitlife\orders-2017-08-16-07-09-37.xlsx')
     df_orders['Order Date'] = pd.to_datetime(df_orders['Order Date'])
     df_orders['Del Date'] = pd.to_datetime(df_orders['Del Date'])
-    # prints unique order status types
-    #print(list(set(df_orders['Order Status'])))
     
-    # just keep the good stuff and sort by date, convert to list
-    df_orders = df_orders[ ['Order Date', 'Customer User Id', 'Order Total Amount', 'Del Date', 'Subscription Type'] ]
-    #df_orders['Subscription Type'].str.upper()
+    # just keep the good stuff, sort by delivery date, convert to list
+    df_orders = df_orders[ ['Order Date', 'Customer User Id', 'Order Total Amount',
+                            'Del Date', 'Subscription Type', 'Order Number'] ]
     
     df_orders = df_orders.loc[df_orders['Subscription Type'].str.upper() == 'WEEKLY']
-    #print(df_orders)
-
+    del df_orders['Subscription Type']
+    
     df_orders = df_orders.sort_values('Del Date')
     
-    # df_orders.values: [ [time, custid, cost, deldate], [time, custid, cost, deldate], ... ]
+    # df_orders.values: [ [order_date, custid, cost, deldate], [order_date, custid, cost, deldate], ... ]
     return df_orders.values
 
 def extract_record_from_order_list(o, order_list):
