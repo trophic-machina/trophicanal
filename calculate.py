@@ -84,7 +84,7 @@ def print_cohort_lengths(cohort_dict):
 def print_cohort_number(cohort_dict):
     return print(' Number of Cohorts = ', len(cohort_dict))
 
-def print_all(cohort_dict):
+def print_all_cohort_stats(cohort_dict):
     print_cohort_dict(cohort_dict)
     print_cohort_lengths(cohort_dict)
     print('----------------------')
@@ -94,5 +94,5 @@ def print_all(cohort_dict):
 if __name__ == '__main__':
     order_list = read_file()
     cohort_dict = build_data_structure(order_list)
-    print_all(cohort_dict) 
+    print_all_cohort_stats(cohort_dict)
 
