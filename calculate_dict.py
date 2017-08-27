@@ -31,55 +31,56 @@ def read_file():
     # df_orders.values: [ [time, custid, cost, deldate], [time, custid, cost, deldate], ... ]
     return df_orders.values
 
-def extract_record_from_order_list(o, order_list):
-    return [order_list[o][0].isocalendar()[1],
-            order_list[o][1],
-            order_list[o][2],
-            order_list[o][3].isocalendar()[1]]
-
 def build_data_structure(order_list):
     # initialize counters and trackers
     cohort = 1
-
-    # order_record has: [ order_week_number, current_custid, order_cost, delivery_week_number ]
-    order_record = extract_record_from_order_list(0, order_list)
-    delivery_week_number = order_record[3]
-
+    order_date          = order_list[0][0]
+    first_custid        = order_list[0][1]
+    order_cost          = order_list[0][2]
+    cohort_start_date   = order_list[0][3]
+    
+    order_week_number = order_date.isocalendar()[1]
+    delivery_week_number = cohort_start_date.isocalendar()[1]
+    
     # Initialize dict to track cust cohort,
     # and multilevel dict with earliest order placed for main data structure.
     cust_cohort_dict = {}
-    cust_cohort_dict[order_record[1]] = cohort
+    cust_cohort_dict[first_custid] = cohort
     cohort_dict = multi_level_dict()
-    cohort_dict[1][ order_record[1] ] = [ order_record[0], order_record[2], order_record[3] ]
+    cohort_dict[1][ first_custid ] = [ order_week_number, order_cost, delivery_week_number ]
     
     for o in range(1, len(order_list)):
-        order_record = extract_record_from_order_list(o, order_list)
-        if order_record[1] in cust_cohort_dict:
-            cust_cohort = cust_cohort_dict[order_record[1]]
-            cohort_dict[cust_cohort][order_record[1]].append([order_record[0], order_record[2], order_record[3] ])
+        order_week_number    = order_list[o][0].isocalendar()[1]
+        current_custid       = order_list[o][1]
+        current_order_cost   = order_list[o][2]
+        current_delivery_week = order_list[o][3].isocalendar()[1]
+        
+        #print("cust id: ", current_custid)
+        if current_custid in cust_cohort_dict:  #[1]:
+            #print("current_custid, current_order_cost= ", current_custid, current_order_cost)
+            cust_cohort = cust_cohort_dict[current_custid]
+            #print("cust_cohort= ", cust_cohort)
+            cohort_dict[cust_cohort][current_custid].append([order_week_number, current_order_cost, current_delivery_week ])
         else:
             # now deal with week to find cohort
-            if order_record[3] > delivery_week_number:
-                delivery_week_number = order_record[3]
+            if current_delivery_week > delivery_week_number:
+                delivery_week_number = current_delivery_week
                 cohort = cohort + 1
-            cust_cohort_dict[order_record[1]] = cohort
-            cohort_dict[cohort][order_record[1]] = [ [ order_record[0], order_record[2], order_record[3] ] ]
+            cust_cohort_dict[current_custid] = cohort
+            cohort_dict[cohort][current_custid] = [ [order_week_number, current_order_cost, current_delivery_week] ]
     return cohort_dict
 
 if __name__ == '__main__':
     order_list = read_file()
     cohort_dict = build_data_structure(order_list)
-    """
     pprint(cohort_dict)
-    
     # six cohorts
     print(
-        " Cohort 1 = ", len(cohort_dict[1]), "\n",
-         "Cohort 2 = ", len(cohort_dict[2]), "\n",
-         "Cohort 3 = ", len(cohort_dict[3]), "\n",
-         "Cohort 4 = ", len(cohort_dict[4]), "\n",
-         "Cohort 5 = ", len(cohort_dict[5]), "\n",
-         "Cohort 6 = ", len(cohort_dict[6])
+        "Cohort 1 = ", len(cohort_dict[1]), "\n",
+        "Cohort 2 = ", len(cohort_dict[2]), "\n",
+        "Cohort 3 = ", len(cohort_dict[3]), "\n",
+        "Cohort 4 = ", len(cohort_dict[4]), "\n",
+        "Cohort 5 = ", len(cohort_dict[5]), "\n",
+        "Cohort 6 = ", len(cohort_dict[6])
     )
-    """
-
+    
