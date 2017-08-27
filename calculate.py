@@ -154,6 +154,8 @@ def build_summary_data_structure(cohort_dict):
                         
                     #break
                 #break
+
+            if number_of_orders == 0: break
             AOV = net_revenues / number_of_orders
             # Diagonal table so.... cool!
             print('table_column = ', table_column, 'cohort = ', cohort)
@@ -188,7 +190,8 @@ def build_summary_data_structure(cohort_dict):
             print('summary_table_row = ', summary_table_row)
         #break
         summary_table_list.append([summary_table_row])
-        
+    return summary_table_list
+
 """
                 # for cust order
             #week_number =
@@ -202,5 +205,5 @@ if __name__ == '__main__':
     order_list = read_file()
     cohort_dict = build_data_structure(order_list)
     #print_all_cohort_stats(cohort_dict)
-    build_summary_data_structure(cohort_dict)
+    summary_table = build_summary_data_structure(cohort_dict)
 
