@@ -95,16 +95,19 @@ def print_all_cohort_stats(cohort_dict):
 def build_summary_data_structure(cohort_dict):
     GROSS_MARGIN = 0.35
     
-    # get week number for first table column
-    for key in cohort_dict[1]:
-        first_week_number = cohort_dict[1][key][0][2]
-        break
 
     # cohort_dict indexed on 1
     # FOR NOW at least, table square, # of columns = # of cohorts = len(cohort_dict)
     summary_table_list = []
     for cohort in range(1, len(cohort_dict) + 1):
+        print('COHORT = ', cohort)
         current_cohort_dict = dict.copy(cohort_dict[cohort])
+        # get week number for first table column for each cohort
+        for key in current_cohort_dict:
+            first_week_number = current_cohort_dict[key][0][2]
+            print('first_week_number = ', first_week_number)
+            break
+        first_week_orders = 0
         #pprint(current_cohort_dict)
         # -> [cust][order][order info]
         #print("c = ", cohort)
@@ -159,17 +162,19 @@ def build_summary_data_structure(cohort_dict):
             AOV = net_revenues / number_of_orders
             # Diagonal table so.... cool!
             print('table_column = ', table_column, 'cohort = ', cohort)
-            if table_column == cohort - 1:
-                margin_per_cust = AOV * GROSS_MARGIN
+            if table_column == 0:  #int(table_column) >= int(cohort - 1):
+                first_week_orders = number_of_orders
+                margin_per_cust = GROSS_MARGIN * (net_revenues / first_week_orders)
                 renewal_rate = 0.
                 cummulative_renewal_rate = 0.
-                first_week_orders = number_of_orders
             else:
-                print('table_column = ', table_column, 'cohort = ', cohort)
-                print('summary_table_row[table_column) = ', summary_table_row[table_column - 1])
-                #renewal_rate = number_of_orders / summary_table_row[table_column - 1][3]
+                print('IN ELSE table_column = ', table_column, 'cohort = ', cohort)
+                print('IN ELSE summary_table_row = ', summary_table_row)
+                #print('summary_table_row[table_column) = ', summary_table_row[table_column - 1][3])
+                renewal_rate = number_of_orders / summary_table_row[table_column - 1][3]  #[table_column][3]
+                
                 cummulative_renewal_rate = number_of_orders/first_week_orders
-                #margin_per_cust =  /first_week_orders # (sum of net rev/first week orders)
+                margin_per_cust = GROSS_MARGIN * ( first_week_orders * (summary_table_row[table_column - 1][8]/GROSS_MARGIN) + net_revenues) / first_week_orders
 
             """
             #print('COHORT = ', cohort, 'TABLE COLUMN = ', table_column,
@@ -180,16 +185,20 @@ def build_summary_data_structure(cohort_dict):
                   'margin_per_cust = ', margin_per_cust)
 
             """
-            summary_table_cell = [cohort, table_column, number_of_customers,
+            summary_table_cell = [cohort, table_column,
+                                  number_of_customers,
                                   number_of_orders,
-                                  net_revenues, AOV, margin_per_cust,
-                                  renewal_rate, cummulative_renewal_rate]
-            print('SUMMARY TABLE CELL = \n', summary_table_cell)
+                                  renewal_rate, cummulative_renewal_rate,
+                                  AOV,
+                                  net_revenues, margin_per_cust]
+            #print('SUMMARY TABLE CELL = \n', summary_table_cell)
             #break
             summary_table_row.append(summary_table_cell)
-            print('summary_table_row = ', summary_table_row)
-        #break
-        summary_table_list.append([summary_table_row])
+            #print('summary_table_row = ', summary_table_row)
+        summary_table_list.append(summary_table_row)
+    #print('SUMMARY TABLE LIST')
+    #print(summary_table_list)
+    
     return summary_table_list
 
 """
@@ -206,4 +215,5 @@ if __name__ == '__main__':
     cohort_dict = build_data_structure(order_list)
     #print_all_cohort_stats(cohort_dict)
     summary_table = build_summary_data_structure(cohort_dict)
+    print(summary_table)
 
