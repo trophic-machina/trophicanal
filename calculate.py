@@ -81,18 +81,126 @@ def print_cohort_lengths(cohort_dict):
     )
     return
 
-def print_cohort_number(cohort_dict):
+def print_number_of_cohorts(cohort_dict):
     return print(' Number of Cohorts = ', len(cohort_dict))
 
 def print_all_cohort_stats(cohort_dict):
     print_cohort_dict(cohort_dict)
     print_cohort_lengths(cohort_dict)
     print('----------------------')
-    print_cohort_number(cohort_dict)
+    print_number_of_cohorts(cohort_dict)
     return
+
+
+def build_summary_data_structure(cohort_dict):
+    GROSS_MARGIN = 0.35
+    
+    # get week number for first table column
+    for key in cohort_dict[1]:
+        first_week_number = cohort_dict[1][key][0][2]
+        break
+
+    # cohort_dict indexed on 1
+    # FOR NOW at least, table square, # of columns = # of cohorts = len(cohort_dict)
+    summary_table_list = []
+    for cohort in range(1, len(cohort_dict) + 1):
+        current_cohort_dict = dict.copy(cohort_dict[cohort])
+        #pprint(current_cohort_dict)
+        # -> [cust][order][order info]
+        #print("c = ", cohort)
+        #print('current_cohort_dict = \n', current_cohort_dict, '\n')
+        # need list (dict?) for customers in cohort, one entry for each column
+        #number_of_customers = []
+        summary_table_row = []
+        for table_column in range(0, len(cohort_dict)):
+            column_week_number = first_week_number + table_column
+            print('column_week_number = ', column_week_number)
+            number_of_customers = 0
+            number_of_orders = 0
+            net_revenues = 0.
+            AOV = 0.
+            margin_per_cust = 0.
+            renewal_rate = 0.
+            cummulative_renewal_rate = 0.
+
+            for cust in current_cohort_dict:
+                number_of_customers += 1
+
+                # pull out order list from dict
+                orders = current_cohort_dict[cust]
+                #print('\norders = ', orders)
+                """
+                print('COHORT = ', cohort, 'TABLE COLUMN = ', table_column,
+                      'column_week_number = ', column_week_number,
+                      'number_of_customers = ', number_of_customers,
+                      'number_of_orders = ', number_of_orders,
+                      ' CUST = ', cust, 'len(orders) = ', len(orders))
+                """
+                #print(cust, current_cohort_dict[cust])
+                #print(len(current_cohort_dict[cust]))
+                for order in range(0, len(orders)):
+                    ##print('order = ', order, 'orders[order] = ', orders[order])
+                    
+                    if cust == 410:
+                        #print('CUSTOMER 410')
+                        pass
+                        
+                    elif orders[order][2] == column_week_number:
+                        number_of_orders += 1
+                        #print(orders[order][2])
+                        order_cost = orders[order][1]
+                        #print(order_cost)
+                        net_revenues += order_cost
+                        
+                    #break
+                #break
+            AOV = net_revenues / number_of_orders
+            # Diagonal table so.... cool!
+            print('table_column = ', table_column, 'cohort = ', cohort)
+            if table_column == cohort - 1:
+                margin_per_cust = AOV * GROSS_MARGIN
+                renewal_rate = 0.
+                cummulative_renewal_rate = 0.
+                first_week_orders = number_of_orders
+            else:
+                print('table_column = ', table_column, 'cohort = ', cohort)
+                print('summary_table_row[table_column) = ', summary_table_row[table_column - 1])
+                #renewal_rate = number_of_orders / summary_table_row[table_column - 1][3]
+                cummulative_renewal_rate = number_of_orders/first_week_orders
+                #margin_per_cust =  /first_week_orders # (sum of net rev/first week orders)
+
+            """
+            #print('COHORT = ', cohort, 'TABLE COLUMN = ', table_column,
+                  'number_of_customers = ', number_of_customers,
+                  'number_of_orders = ', number_of_orders,
+                  'net_revenues = ', net_revenues,
+                  'AOV = ', AOV,
+                  'margin_per_cust = ', margin_per_cust)
+
+            """
+            summary_table_cell = [cohort, table_column, number_of_customers,
+                                  number_of_orders,
+                                  net_revenues, AOV, margin_per_cust,
+                                  renewal_rate, cummulative_renewal_rate]
+            print('SUMMARY TABLE CELL = \n', summary_table_cell)
+            #break
+            summary_table_row.append(summary_table_cell)
+            print('summary_table_row = ', summary_table_row)
+        #break
+        summary_table_list.append([summary_table_row])
+        
+"""
+                # for cust order
+            #week_number =
+            if cohort == 1:
+                if column == 0:
+                    print(column)
+                    pprint(current_cohort_dict[413]) #[0][2])
+"""
 
 if __name__ == '__main__':
     order_list = read_file()
     cohort_dict = build_data_structure(order_list)
-    print_all_cohort_stats(cohort_dict)
+    #print_all_cohort_stats(cohort_dict)
+    build_summary_data_structure(cohort_dict)
 
