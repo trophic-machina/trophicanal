@@ -26,7 +26,7 @@ def read_file():
     
     df_orders = df_orders.sort_values('Del Date')
     
-    # df_orders.values: [ [order_date, custid, cost, deldate], [order_date, custid, cost, deldate], ... ]
+    # df_orders.values: [ [order_date, custid, cost, deldate, 'Order Number'], [order_date, custid, cost, deldate, 'Order Number'], ... ]
     return df_orders.values
 
 def extract_record_from_order_list(o, order_list):
@@ -64,20 +64,35 @@ def build_data_structure(order_list):
             cohort_dict[cohort][order_record[1]] = [ [ order_record[0], order_record[2], order_record[3] ] ]
     return cohort_dict
 
-if __name__ == '__main__':
-    order_list = read_file()
-    cohort_dict = build_data_structure(order_list)
-    """
-    pprint(cohort_dict)
-    
+
+def print_cohort_dict(cohort_dict):
+    #print(cohort_dict[5][626])
+    return pprint(cohort_dict)
+
+def print_cohort_lengths(cohort_dict):
     # six cohorts
     print(
         " Cohort 1 = ", len(cohort_dict[1]), "\n",
-         "Cohort 2 = ", len(cohort_dict[2]), "\n",
-         "Cohort 3 = ", len(cohort_dict[3]), "\n",
-         "Cohort 4 = ", len(cohort_dict[4]), "\n",
-         "Cohort 5 = ", len(cohort_dict[5]), "\n",
-         "Cohort 6 = ", len(cohort_dict[6])
+        "Cohort 2 = ", len(cohort_dict[2]), "\n",
+        "Cohort 3 = ", len(cohort_dict[3]), "\n",
+        "Cohort 4 = ", len(cohort_dict[4]), "\n",
+        "Cohort 5 = ", len(cohort_dict[5]), "\n",
+        "Cohort 6 = ", len(cohort_dict[6])
     )
-    """
+    return
+
+def print_cohort_number(cohort_dict):
+    return print(' Number of Cohorts = ', len(cohort_dict))
+
+def print_all(cohort_dict):
+    print_cohort_dict(cohort_dict)
+    print_cohort_lengths(cohort_dict)
+    print('----------------------')
+    print_cohort_number(cohort_dict)
+    return
+
+if __name__ == '__main__':
+    order_list = read_file()
+    cohort_dict = build_data_structure(order_list)
+    print_all(cohort_dict)
 
